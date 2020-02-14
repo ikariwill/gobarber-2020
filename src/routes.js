@@ -6,8 +6,10 @@ import UserController from './app/controllers/UserController';
 import ProviderController from './app/controllers/ProviderController';
 import SessionController from './app/controllers/SessionController';
 import FileController from './app/controllers/FileController';
+import AppointmentController from './app/controllers/AppointmentController';
+import ScheduleController from './app/controllers/ScheduleController';
 
-import authMiddleware from './app/middlewares/auth';
+import loggedOnly from './app/middlewares/auth';
 
 const routes = new Router();
 const upload = multer(multerConfig);
@@ -18,20 +20,20 @@ routes.post('/sessions', SessionController.store);
 // USERS
 routes.post('/users', UserController.store);
 
-routes.put('/users', authMiddleware, UserController.update);
+routes.put('/users', loggedOnly, UserController.update);
 
 routes.get('/users', UserController.index);
 
 routes.get('/users/:email', UserController.show);
 
-routes.get('/providers', authMiddleware, ProviderController.index);
+routes.get('/providers', loggedOnly, ProviderController.index);
+
+routes.post('/appointments', loggedOnly, AppointmentController.store);
+routes.get('/appointments', loggedOnly, AppointmentController.index);
+
+routes.get('/schedules', loggedOnly, ScheduleController.index);
 
 // UPLOAD
-routes.post(
-  '/files',
-  authMiddleware,
-  upload.single('file'),
-  FileController.store
-);
+routes.post('/files', loggedOnly, upload.single('file'), FileController.store);
 
 export default routes;
